@@ -9,10 +9,10 @@
 
 
 void create_dirs() {
-    std::filesystem::path results_folder_path = "D:\\Университет\\ПарПрог\\lab1\\matrix\\matrix\\results";
-    std::filesystem::path result_matrix_folder_path = "D:\\Университет\\ПарПрог\\lab1\\matrix\\matrix\\results\\result_matrix";
-    std::filesystem::path result_computings_folder_path = "D:\\Университет\\ПарПрог\\lab1\\matrix\\matrix\\results\\result_computings";
-    std::filesystem::path data_folder_path = "D:\\Университет\\ПарПрог\\lab1\\matrix\\matrix\\data";
+    std::filesystem::path results_folder_path = "D:\\Университет\\ПарПрог\\lab_1\\lab_1\\results";
+    std::filesystem::path result_matrix_folder_path = "D:\\Университет\\ПарПрог\\lab_1\\lab_1\\results\\result_matrix";
+    std::filesystem::path result_computings_folder_path = "D:\\Университет\\ПарПрог\\lab_1\\lab_1\\results\\result_computing";
+    std::filesystem::path data_folder_path = "D:\\Университет\\ПарПрог\\lab_1\\lab_1\\data";
 
     if (!std::filesystem::exists(results_folder_path) || !std::filesystem::is_directory(results_folder_path)) {
         std::filesystem::create_directories(results_folder_path);
@@ -57,7 +57,7 @@ int** create_matrix(int size) {
     {
         for (int j = 0; j < size; j++) {
             matrix[i][j] = rand() % 300;
-       }
+        }
     }
     return matrix;
 }
@@ -77,7 +77,7 @@ void write_matrix_to_file(std::string file_name, int** matrix, int size) {
 }
 
 int** matrix_multiplication(int** first_matrix, int** second_matrix, int size, double& time) {
-    int** result_matrix = new int*[size];
+    int** result_matrix = new int* [size];
     for (int i = 0; i < size; i++) {
         result_matrix[i] = new int[size];
     }
@@ -104,46 +104,15 @@ int main()
     srand(time(NULL));
     create_dirs();
 
-    int size = 20;
-    int** m1 = create_matrix(size);
-    int** m2 = create_matrix(size);
-    double time;
-
-    int** res = matrix_multiplication(m1, m2, size, time);
-    std::cout << "Первая матрица:" << std::endl;
-    for (int i = 0; i < 5; i++) {
-        for (int j = 0; j < size; j++) {
-            std::cout << m1[i][j] << " ";
-        }
-        std::cout << std::endl;
+    int sizes[7] = { 100, 200, 300, 500, 750, 900, 1000 };
+    for (auto size : sizes) {
+        int** m1 = create_matrix(size);
+        int** m2 = create_matrix(size);
+        double time;
+        int** res = matrix_multiplication(m1, m2, size, time);
+        write_matrix_to_file(std::format("data/matrix_1_{}.txt", size), m1, size);
+        write_matrix_to_file(std::format("data/matrix_2_{}.txt", size), m2, size);
+        write_matrix_to_file(std::format("results/result_matrix/result_matrix_{}.txt", size), res, size);
+        save_to_json(std::format("results/result_computing/matrix_{}.json", size), time, size);
     }
-
-    std::cout << "\n\nВторая матрица:" << std::endl;
-    for (int i = 0; i < size; i++) {
-        for (int j = 0; j < size; j++) {
-            std::cout << m2[i][j] << " ";
-        }
-        std::cout << std::endl;
-    }
-
-    std::cout << "\n\nРезультирующая матрица:" << std::endl;
-    for (int i = 0; i < size; i++) {
-        for (int j = 0; j < size; j++) {
-            std::cout << res[i][j] << " ";
-        }
-        std::cout << std::endl;
-    }
-
-    std::cout << "Время выполнения перемножения матриц: " << time << " seconds" << std::endl;
-
-    save_to_json(std::format("results/result_matrix/result_{}.json", size), time, size);
-    write_matrix_to_file(std::format("results/result_computings/result_{}.txt", size), res, size);
-
-    //int sizes[7] = { 100, 500, 1000, 1500, 2000, 3000, 4000 };
-    //for (auto size : sizes) {
-    //    for (int i = 1; i < 3; i++)
-    //    {
-    //        write_matrix(create_matrix(size), size, "matrix_" + std::to_string(size) + "_" + std::to_string(i) + ".txt");
-    //    }
-    //}
 }
